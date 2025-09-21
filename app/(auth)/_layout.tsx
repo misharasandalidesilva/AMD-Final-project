@@ -1,41 +1,16 @@
-// app/(auth)/_layout.tsx
-import { Stack } from 'expo-router';
+import { Stack } from "expo-router";
+import React from "react";
 
-export default function AuthLayout() {
+const AuthLayout = () => {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="login" />
-      <Stack.Screen name="signup" />
+    <Stack
+      screenOptions={{ headerShown: false, animation: "slide_from_right" }}
+      initialRouteName="login" // 👈 default screen = login
+    >
+      <Stack.Screen name="login" options={{ title: "Login" }} />
+      <Stack.Screen name="register" options={{ title: "Register" }} />
     </Stack>
   );
-}
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // app/(auth)/_layout.tsx
-// import React from 'react';
-// import { Stack } from 'expo-router';
-// import { View, StyleSheet } from 'react-native';
-
-// export default function AuthLayout() {
-//   return (
-//     <View style={styles.container}>
-//       <Stack screenOptions={{ headerShown: false }} />
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({ container: { flex: 1 } });
+export default AuthLayout;
