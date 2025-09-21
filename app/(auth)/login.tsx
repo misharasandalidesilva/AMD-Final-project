@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, CheckSquare } from 'lucide-react';
+import { useRouter } from 'expo-router';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -7,16 +8,21 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (!email || !password) { alert('Please fill all fields'); return; }
-    if (!email.includes('@')) { alert('Enter a valid email'); return; }
+  const router = useRouter();
 
-    setIsLoading(true);
-    setTimeout(() => { setIsLoading(false); alert('Login successful!'); }, 2000);
+  const handleLogin = () => {
+    router.push('/(dashboard)/homePage');
+    // if (!email || !password) { alert('Please fill all fields'); return; }
+    // if (!email.includes('@')) { alert('Enter a valid email'); return; }
+
+    // setIsLoading(true);
+    // setTimeout(() => { setIsLoading(false); alert('Login successful!'); }, 2000);
   };
 
   const handleForgotPassword = () => alert('Reset link sent to email');
-  const handleSignUp = () => alert('Navigate to Sign Up');
+  const handleSignUp = () => {
+    router.push('/(auth)/signup');
+  }
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-blue-300 via-purple-200 to-indigo-150 flex items-center justify-center p-2">

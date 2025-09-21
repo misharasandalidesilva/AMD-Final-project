@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, CheckSquare, Check } from 'lucide-react';
+import { register } from '@/service/AuthService';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -25,13 +26,6 @@ export default function RegisterPage() {
     return true;
   };
 
-  const handleRegister = () => {
-    if (!validateForm()) return;
-    setIsLoading(true);
-    setTimeout(() => { setIsLoading(false); alert('Registration successful!'); }, 2000);
-  };
-
-  const handleSignIn = () => alert('Navigate to sign in');
 
   const getPasswordStrength = () => {
     const pwd = formData.password;
