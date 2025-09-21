@@ -1,194 +1,233 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, CheckSquare, Check } from 'lucide-react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Pressable,
+  StatusBar, Image
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { register } from '@/service/AuthService';
 
-export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
+export default function SignupScreenLight() {
+  const router = useRouter();
+
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (field: string, value: string) => setFormData(prev => ({ ...prev, [field]: value }));
-
-  const validateForm = () => {
-    const { fullName, email, password, confirmPassword } = formData;
-    if (!fullName.trim()) { alert('Enter your full name'); return false; }
-    if (!email.includes('@')) { alert('Enter valid email'); return false; }
-    if (password.length < 6) { alert('Password must be 6+ chars'); return false; }
-    if (password !== confirmPassword) { alert('Passwords do not match'); return false; }
-    if (!agreeTerms) { alert('Agree to Terms'); return false; }
-    return true;
+  // Toast config
+  const toastConfig = {
+    success: (props: any) => (
+        <BaseToast
+            {...props}
+            style={{ borderLeftColor: '#10B981', backgroundColor: '#D1FAE5', borderRadius: 10, marginHorizontal: 10 }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            text1Style={{ fontSize: 16, fontWeight: 'bold', color: '#065F46' }}
+            text2Style={{ fontSize: 14, color: '#065F46' }}
+        />
+    ),
+    error: (props: any) => (
+        <ErrorToast
+            {...props}
+            style={{ borderLeftColor: '#EF4444', backgroundColor: '#FEE2E2', borderRadius: 10, marginHorizontal: 10 }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            text1Style={{ fontSize: 16, fontWeight: 'bold', color: '#B91C1C' }}
+            text2Style={{ fontSize: 14, color: '#B91C1C' }}
+        />
+    ),
   };
 
+  const handleSignup = async () => {
+    if (!fullName || !email || !password || !confirmPassword) {
+      Toast.show({
+        type: 'error',
+        text1: 'Missing Fields',
+        text2: 'Please fill in all fields',
+        position: 'top',
+        topOffset: 50,
+        visibilityTime: 3000,
+      });
+      return;
+    }
 
-  const getPasswordStrength = () => {
-    const pwd = formData.password;
-    if (!pwd) return { strength: 0, text: '', color: '' };
-    if (pwd.length < 4) return { strength: 25, text: 'Weak', color: 'bg-red-500' };
-    if (pwd.length < 6) return { strength: 50, text: 'Fair', color: 'bg-yellow-500' };
-    if (pwd.length < 8) return { strength: 75, text: 'Good', color: 'bg-blue-500' };
-    return { strength: 100, text: 'Strong', color: 'bg-green-500' };
+    if (password !== confirmPassword) {
+      Toast.show({
+        type: 'error',
+        text1: 'Password Mismatch',
+        text2: 'Passwords do not match',
+        position: 'top',
+        topOffset: 50,
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    // if (!acceptTerms) {
+    //   Toast.show({
+    //     type: 'error',
+    //     text1: 'Terms Not Accepted',
+    //     text2: 'Please accept the terms & conditions',
+    //     position: 'top',
+    //     topOffset: 50,
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
+
+    setIsLoading(true);
+
+    try {
+      await register(email, password);
+      Toast.show({
+        type: 'success',
+        text1: 'Account Created',
+        text2: 'Welcome aboard!',
+        position: 'top',
+        topOffset: 50,
+        visibilityTime: 3000,
+      });
+      router.push('/(auth)/login');
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Signup Failed',
+        text2: 'Something went wrong. Try again.',
+        position: 'top',
+        topOffset: 50,
+        visibilityTime: 3000,
+      });
+      setIsLoading(false);
+    }
   };
-
-  const passwordStrength = getPasswordStrength();
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-300 via-purple-200 to-indigo-150 flex items-center justify-center p-2">
-      <div className="w-full max-w-md h-screen sm:h-auto flex flex-col justify-center">
-        <div className="bg-slate-200/80 backdrop-blur-md rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 flex flex-col justify-between h-full">
-
+      <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1 bg-white"
+      >
+        <StatusBar style="dark" />
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="p-6">
+          <View className="flex items-center justify-center mb-6">
+            {/* <Image
+                source={require("../../assets/images/signup.jpg")}
+                style={{ width: 200, height: 200 }} // podi & visible size
+                resizeMode="contain"
+            /> */}
+          </View>
           {/* Header */}
-          <div className="text-center mb-4 sm:mb-6">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <CheckSquare color="white" size={28} />
-              </div>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Join TO DO App!</h1>
-            <p className="text-gray-600 text-sm">Create your account and start organizing</p>
-          </div>
+          <View className="mb-8">
+            <Text className="text-2xl italic font-bold text-gray-600 text-center mb-2">
+              Create Account
+            </Text>
+            <Text className="text-gray-500 text-center text-base">
+              Sign up to get started
+            </Text>
+          </View>
 
-          {/* Form Fields */}
-          <div className="space-y-3 flex-1 flex flex-col justify-center">
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-1">Full Name</label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-                  <User color="#6B7280" size={20} />
-                </div>
-                <input
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  placeholder="Enter your full name"
-                  className="w-full bg-white/70 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 shadow-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+          {/* Form */}
+          <View className="space-y-5">
+            {/* Full Name */}
+            <View>
+              <Text className="text-gray-500 text-sm mb-1">Full Name</Text>
+              <View className="flex-row items-center bg-gray-100 border border-gray-300 rounded-lg px-3 py-2">
+                <MaterialCommunityIcons name="account-outline" size={22} color="#6B7280" className="mr-2" />
+                <TextInput
+                    value={fullName}
+                    onChangeText={setFullName}
+                    placeholder="Enter your full name"
+                    placeholderTextColor="#9CA3AF"
+                    autoCapitalize="words"
+                    className="flex-1 text-gray-900"
                 />
-              </div>
-            </div>
+              </View>
+            </View>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-1">Email Address</label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-                  <Mail color="#6B7280" size={20} />
-                </div>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="Enter your email"
-                  className="w-full bg-white/70 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 shadow-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+            {/* Email */}
+            <View>
+              <Text className="text-gray-500 text-sm mb-1">Email</Text>
+              <View className="flex-row items-center bg-gray-100 border border-gray-300 rounded-lg px-3 py-2">
+                <MaterialCommunityIcons name="email-outline" size={22} color="#6B7280" className="mr-2" />
+                <TextInput
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="Enter your email"
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    className="flex-1 text-gray-900"
                 />
-              </div>
-            </div>
+              </View>
+            </View>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-1">Password</label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-                  <Lock color="#6B7280" size={20} />
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="Create a password"
-                  className="w-full bg-white/70 border border-gray-200 rounded-xl pl-10 pr-10 py-3 text-sm text-gray-900 shadow-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+            {/* Password */}
+            <View>
+              <Text className="text-gray-500 text-sm mb-1">Password</Text>
+              <View className="flex-row items-center bg-gray-100 border border-gray-300 rounded-lg px-3 py-2">
+                <MaterialCommunityIcons name="lock-outline" size={22} color="#6B7280" className="mr-2" />
+                <TextInput
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Create a password"
+                    placeholderTextColor="#9CA3AF"
+                    secureTextEntry
+                    autoCapitalize="none"
+                    className="flex-1 text-gray-900"
                 />
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </span>
-              </div>
-              {formData.password && (
-                <div className="mt-2">
-                  <div className="flex justify-between text-xs font-medium mb-1">
-                    <span className="text-gray-600">Password strength</span>
-                    <span className={`${passwordStrength.strength < 50 ? 'text-red-600' : passwordStrength.strength < 75 ? 'text-yellow-600' : passwordStrength.strength < 100 ? 'text-blue-600' : 'text-green-600'}`}>
-                      {passwordStrength.text}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 h-2 rounded-full">
-                    <div className={`h-2 rounded-full ${passwordStrength.color}`} style={{ width: `${passwordStrength.strength}%` }}></div>
-                  </div>
-                </div>
-              )}
-            </div>
+              </View>
+            </View>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-1">Confirm Password</label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-                  <Lock color="#6B7280" size={20} />
-                </div>
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  placeholder="Confirm password"
-                  className={`w-full bg-white/70 border rounded-xl pl-10 pr-10 py-3 text-sm text-gray-900 shadow-lg focus:ring-2 focus:outline-none ${
-                    formData.confirmPassword && formData.password !== formData.confirmPassword
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                      : formData.confirmPassword && formData.password === formData.confirmPassword
-                      ? 'border-green-300 focus:border-green-500 focus:ring-green-200'
-                      : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'
-                  }`}
+            {/* Confirm Password */}
+            <View>
+              <Text className="text-gray-500 text-sm mb-1">Confirm Password</Text>
+              <View className="flex-row items-center bg-gray-100 border border-gray-300 rounded-lg px-3 py-2">
+                <MaterialCommunityIcons name="lock-check-outline" size={22} color="#6B7280" className="mr-2" />
+                <TextInput
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    placeholder="Confirm password"
+                    placeholderTextColor="#9CA3AF"
+                    secureTextEntry
+                    autoCapitalize="none"
+                    className="flex-1 text-gray-900"
                 />
-                <span
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </span>
-                {formData.confirmPassword && formData.password === formData.confirmPassword && (
-                  <span className="absolute right-10 top-1/2 transform -translate-y-1/2 text-green-500"><Check size={18} /></span>
-                )}
-              </div>
-              {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">Passwords do not match</p>
-              )}
-            </div>
+              </View>
+            </View>
 
-            {/* Terms */}
-            <div className="flex items-start space-x-3 py-1">
-              <div
-                onClick={() => setAgreeTerms(!agreeTerms)}
-                className={`mt-1 w-5 h-5 rounded-lg border-2 flex items-center justify-center cursor-pointer ${
-                  agreeTerms ? 'bg-gradient-to-r from-blue-500 to-indigo-600 border-blue-500' : 'bg-white/70 border-gray-300 hover:border-blue-400'
-                }`}
+            {/* Signup Button */}
+            <TouchableOpacity onPress={handleSignup} disabled={isLoading}>
+              <LinearGradient
+                  colors={['#4F46E5', '#6366F1']}
+                  className="w-full py-3 rounded-lg items-center mt-4"
               >
-                {agreeTerms && <Check color="white" size={16} />}
-              </div>
-              <div className="text-xs text-gray-600 leading-relaxed">
-                I agree to <button className="text-blue-600 font-semibold">Terms</button> and <button className="text-blue-600 font-semibold">Privacy</button>
-              </div>
-            </div>
+                <Text className="text-white font-semibold">
+                  {isLoading ? 'Creating Account...' : 'Create Account'}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
 
-            {/* Register */}
-            <button
-              onClick={handleRegister}
-              disabled={isLoading}
-              className={`w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl py-3 text-white text-sm font-semibold hover:from-blue-600 hover:to-indigo-700 active:scale-95 transform transition-all duration-300 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-            >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
-            </button>
+            {/* Login Link */}
+            <View className="flex-row justify-center mt-4">
+              <Text className="text-gray-500 text-sm">Already have an account? </Text>
+              <Pressable onPress={() => router.push('/(auth)/login')}>
+                <Text className="text-blue-500 text-sm font-semibold">Sign In</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ScrollView>
 
-            {/* Sign In */}
-            <div className="text-center mt-3">
-              <span className="text-gray-600 text-xs">Already have an account? </span>
-              <button onClick={handleSignIn} className="text-blue-600 text-xs font-semibold">Sign In</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        {/* Toast Container */}
+        <Toast config={toastConfig} />
+      </KeyboardAvoidingView>
   );
 }
