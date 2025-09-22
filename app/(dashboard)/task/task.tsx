@@ -1,213 +1,387 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  ScrollView, 
+  SafeAreaView,
+  StatusBar,
+  Dimensions 
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import { 
+  Plus, 
   Bell, 
-  Search, 
   Check, 
-  Calendar, 
+  Search, 
   Edit3, 
   Trash2, 
-  Clock, 
-  Plus 
-} from 'lucide-react';
-import { Task, Theme, Stats } from './types';
+  Calendar, 
+  Clock 
+} from 'lucide-react-native';
 
-interface TasksProps {
-  tasks: Task[];
-  filteredTasks: Task[];
-  stats: Stats;
-  darkMode: boolean;
-  theme: Theme;
-  unreadNotifications: number;
-  activeTab: 'all' | 'active' | 'completed';
-  searchQuery: string;
-  setActiveTab: (tab: 'all' | 'active' | 'completed') => void;
-  setSearchQuery: (query: string) => void;
-  setShowAddModal: (show: boolean) => void;
-  setShowNotificationModal: (show: boolean) => void;
-  toggleTask: (id: number) => void;
-  deleteTask: (id: number) => void;
-  startEditTask: (task: Task) => void;
-  getPriorityColor: (priority: string) => string;
-  getCategoryColor: (category: string) => string;
-}
+const { width } = Dimensions.get('window');
 
-const Tasks: React.FC<TasksProps> = ({
-  filteredTasks,
-  stats,
-  darkMode,
-  theme,
-  unreadNotifications,
-  activeTab,
-  searchQuery,
-  setActiveTab,
-  setSearchQuery,
-  setShowAddModal,
-  setShowNotificationModal,
-  toggleTask,
-  deleteTask,
-  startEditTask,
-  getPriorityColor,
-  getCategoryColor
+const Tasks = ({ 
+  tasks, 
+  stats, 
+  unreadNotifications, 
+  darkMode, 
+  toggleTask, 
+  deleteTask, 
+  startEditTask, 
+  setShowAddModal, 
+  setShowNotificationModal 
 }) => {
+  const [activeTab, setActiveTab] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const getPriorityColor = (priority) => {
+    const colors = {
+      high: ['#fed7aa', '#fca5a5'],
+      medium: ['#fde68a', '#f59e0b'],
+      low: ['#bbf7d0', '#10b981']
+    };
+    return colors[priority] || ['#e5e7eb', '#6b7280'];
+  };
+
+  const getCategoryColor = (category) => {
+    const colors = {
+      Work: darkMode ? { bg: '#1e3a8a', text: '#bfdbfe' } : { bg: '#dbeafe', text: '#1d4ed8' },
+      Personal: darkMode ? { bg: '#581c87', text: '#c4b5fd' } : { bg: '#e9d5ff', text: '#7c3aed' },
+      Health: darkMode ? { bg: '#14532d', text: '#bbf7d0' } : { bg: '#dcfce7', text: '#16a34a' }
+    };
+    return colors[category] || (darkMode ? { bg: '#374151', text: '#d1d5db' } : { bg: '#f3f4f6', text: '#374151' });
+  };
+
+  const filteredTasks = useMemo(() => {
+    return tasks.filter(task => {
+      const matchesTab = activeTab === 'all' || 
+                       (activeTab === 'active' && !task.completed) || 
+                       (activeTab === 'completed' && task.completed);
+      const matchesSearch = !searchQuery || 
+        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.description.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesTab && matchesSearch;
+    });
+  }, [tasks, activeTab, searchQuery]);
+
   return (
-    <div className={`min-h-screen ${theme.bg}`}>
-      <div className="bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300 px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-6 sm:pb-8 relative overflow-hidden">
-        <div className="relative z-10 max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2">My Tasks</h1>
-              <p className="text-white text-opacity-90 text-base sm:text-lg">
-                {stats.active} tasks remaining
-              </p>
-            </div>
-            <button
-              onClick={() => setShowNotificationModal(true)}
-              className="relative p-2 sm:p-3 bg-white bg-opacity-20 rounded-full backdrop-blur-sm hover:bg-opacity-30 transition-all duration-300"
-            >
-              <Bell className="w-6 sm:w-7 h-6 sm:h-7 text-white" />
-              {unreadNotifications > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-400 text-white text-xs font-bold rounded-full w-5 sm:w-6 h-5 sm:h-6 flex items-center justify-center shadow-lg animate-pulse">
+    <SafeAreaView style={{ flex: 1, backgroundColor: darkMode ? '#111827' : '#f9fafb' }}>
+      <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} />
+      
+      {/* Header Section */}
+      <LinearGradient
+        colors={['#bfdbfe', '#c4b5fd', '#c7d2fe']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ paddingHorizontal: 20, paddingTop: 40, paddingBottom: 24 }}
+      >
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 32, fontWeight: 'bold', color: 'white', marginBottom: 8 }}>
+              My Tasks
+            </Text>
+            <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 18 }}>
+              {stats.active} tasks remaining
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowNotificationModal(true)}
+            style={{
+              padding: 12,
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              borderRadius: 50,
+              position: 'relative'
+            }}
+          >
+            <Bell color="white" size={28} />
+            {unreadNotifications > 0 && (
+              <BlurView intensity={80} tint="light" style={{
+                position: 'absolute',
+                top: -8,
+                right: -8,
+                backgroundColor: '#ef4444',
+                borderRadius: 12,
+                width: 24,
+                height: 24,
+                justifyContent: 'center',
+                alignItems: 'center',
+                overflow: 'hidden'
+              }}>
+                <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>
                   {unreadNotifications}
-                </span>
-              )}
-            </button>
-          </div>
-          
-          <div className="relative">
-            <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-white text-opacity-70" />
-            <input
-              type="text"
-              placeholder="Search tasks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-xl sm:rounded-2xl placeholder-white placeholder-opacity-70 text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 backdrop-blur-sm transition-all duration-300 text-sm sm:text-base"
-            />
-          </div>
-        </div>
-      </div>
+                </Text>
+              </BlurView>
+            )}
+          </TouchableOpacity>
+        </View>
+        
+        {/* Search Bar */}
+        <View style={{ position: 'relative' }}>
+          <Search 
+            color="rgba(255,255,255,0.7)" 
+            size={20} 
+            style={{ position: 'absolute', left: 16, top: 16, zIndex: 1 }}
+          />
+          <TextInput
+            placeholder="Search tasks..."
+            placeholderTextColor="rgba(255,255,255,0.7)"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={{
+              paddingLeft: 48,
+              paddingRight: 16,
+              paddingVertical: 16,
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.3)',
+              color: 'white',
+              fontSize: 16
+            }}
+          />
+        </View>
+      </LinearGradient>
 
-      <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-        <div className={`flex space-x-1 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-xl sm:rounded-2xl p-1 max-w-6xl mx-auto`}>
-          {(['all', 'active', 'completed'] as const).map(tab => (
-            <button
+      {/* Tab Navigation */}
+      <View style={{ 
+        backgroundColor: darkMode ? '#374151' : 'white',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: darkMode ? '#4b5563' : '#e5e7eb'
+      }}>
+        <View style={{
+          backgroundColor: darkMode ? '#4b5563' : '#f3f4f6',
+          borderRadius: 16,
+          padding: 4,
+          flexDirection: 'row'
+        }}>
+          {['all', 'active', 'completed'].map(tab => (
+            <TouchableOpacity
               key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm transition-all duration-300 ${
-                activeTab === tab
-                  ? 'bg-gradient-to-r from-blue-400 to-indigo-400 text-white shadow-lg'
-                  : (darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-blue-500')
-              }`}
+              onPress={() => setActiveTab(tab)}
+              style={{
+                flex: 1,
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                borderRadius: 12,
+                backgroundColor: activeTab === tab ? '#3b82f6' : 'transparent'
+              }}
             >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              <span className="ml-1 sm:ml-2 text-xs">
-                ({tab === 'all' ? stats.total : tab === 'active' ? stats.active : stats.completed})
-              </span>
-            </button>
+              <Text style={{
+                textAlign: 'center',
+                fontWeight: '600',
+                fontSize: 14,
+                color: activeTab === tab ? 'white' : (darkMode ? '#9ca3af' : '#6b7280')
+              }}>
+                {tab.charAt(0).toUpperCase() + tab.slice(1)} ({
+                  tab === 'all' ? stats.total : 
+                  tab === 'active' ? stats.active : 
+                  stats.completed
+                })
+              </Text>
+            </TouchableOpacity>
           ))}
-        </div>
-      </div>
+        </View>
+      </View>
 
-      <div className="flex-1 px-4 sm:px-6 lg:px-8 py-4 space-y-3 sm:space-y-4 overflow-y-auto pb-24">
-        <div className="max-w-6xl mx-auto">
-          {filteredTasks.map(task => (
-            <div
-              key={task.id}
-              className={`${theme.card} rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl border-2 transition-all duration-300 transform hover:scale-[1.01] ${
-                task.completed 
-                  ? (darkMode ? 'border-green-600 bg-green-900 bg-opacity-30' : 'border-green-200 bg-green-50') 
-                  : 'hover:shadow-2xl'
-              }`}
-            >
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <button
-                  onClick={() => toggleTask(task.id)}
-                  className={`w-6 sm:w-7 h-6 sm:h-7 rounded-full border-2 flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
-                    task.completed
-                      ? 'bg-gradient-to-r from-green-300 to-emerald-300 border-green-400 shadow-lg'
-                      : (darkMode ? 'border-gray-600 hover:border-blue-400' : 'border-gray-300 hover:border-blue-400')
-                  }`}
+      {/* Tasks List */}
+      <ScrollView 
+        style={{ flex: 1 }} 
+        contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {filteredTasks.map(task => (
+          <BlurView
+            key={task.id}
+            intensity={task.completed ? 60 : 40}
+            tint={darkMode ? "dark" : "light"}
+            style={{
+              borderRadius: 16,
+              marginBottom: 16,
+              overflow: 'hidden',
+              borderWidth: 2,
+              borderColor: task.completed 
+                ? (darkMode ? '#16a34a' : '#bbf7d0') 
+                : (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)')
+            }}
+          >
+            <View style={{
+              backgroundColor: task.completed 
+                ? (darkMode ? 'rgba(22, 163, 74, 0.2)' : 'rgba(187, 247, 208, 0.3)')
+                : (darkMode ? 'rgba(55, 65, 81, 0.8)' : 'rgba(255, 255, 255, 0.8)'),
+              padding: 20
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                <TouchableOpacity
+                  onPress={() => toggleTask(task.id)}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 14,
+                    borderWidth: 2,
+                    borderColor: task.completed ? '#16a34a' : '#d1d5db',
+                    backgroundColor: task.completed ? '#16a34a' : 'transparent',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: 16,
+                    marginTop: 2
+                  }}
                 >
-                  {task.completed && <Check className="w-4 sm:w-5 h-4 sm:h-5 text-white" />}
-                </button>
+                  {task.completed && <Check color="white" size={16} />}
+                </TouchableOpacity>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <h3 className={`font-bold text-base sm:text-lg ${
-                        task.completed 
-                          ? 'line-through text-gray-500'
-                          : (darkMode ? 'text-white' : 'text-gray-900')
-                      } truncate`}>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <View style={{ flex: 1, marginRight: 12 }}>
+                      <Text style={{
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                        color: task.completed 
+                          ? '#6b7280' 
+                          : (darkMode ? 'white' : '#1f2937'),
+                        textDecorationLine: task.completed ? 'line-through' : 'none',
+                        marginBottom: 4
+                      }}>
                         {task.title}
-                      </h3>
-                      <p className={`text-sm mt-1 ${
-                        task.completed 
-                          ? 'line-through text-gray-400'
-                          : (darkMode ? 'text-gray-300' : 'text-gray-600')
-                      } break-words`}>
+                      </Text>
+                      <Text style={{
+                        fontSize: 14,
+                        color: task.completed 
+                          ? '#9ca3af' 
+                          : (darkMode ? '#d1d5db' : '#6b7280'),
+                        textDecorationLine: task.completed ? 'line-through' : 'none',
+                        marginBottom: 12,
+                        lineHeight: 20
+                      }}>
                         {task.description}
-                      </p>
+                      </Text>
                       
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 sm:mt-4">
-                        <div className="flex items-center space-x-1 sm:space-x-2">
-                          <div className={`w-2 sm:w-3 h-2 sm:h-3 rounded-full ${getPriorityColor(task.priority)} shadow-md`}></div>
-                          <span className={`text-xs font-medium capitalize ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{task.priority}</span>
-                        </div>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 12 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <LinearGradient
+                            colors={getPriorityColor(task.priority)}
+                            style={{
+                              width: 12,
+                              height: 12,
+                              borderRadius: 6,
+                              marginRight: 8
+                            }}
+                          />
+                          <Text style={{
+                            fontSize: 12,
+                            fontWeight: '500',
+                            color: darkMode ? '#9ca3af' : '#6b7280',
+                            textTransform: 'capitalize'
+                          }}>
+                            {task.priority}
+                          </Text>
+                        </View>
                         
-                        <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(task.category)} shadow-sm`}>
-                          {task.category}
-                        </span>
+                        <View style={{
+                          backgroundColor: getCategoryColor(task.category).bg,
+                          paddingHorizontal: 12,
+                          paddingVertical: 4,
+                          borderRadius: 12
+                        }}>
+                          <Text style={{
+                            fontSize: 12,
+                            fontWeight: '600',
+                            color: getCategoryColor(task.category).text
+                          }}>
+                            {task.category}
+                          </Text>
+                        </View>
                         
                         {task.dueDate && (
-                          <div className={`flex items-center space-x-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            <Calendar className="w-3 h-3" />
-                            <span className="text-xs">{task.dueDate}</span>
-                          </div>
+                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Calendar color={darkMode ? '#9ca3af' : '#6b7280'} size={12} style={{ marginRight: 4 }} />
+                            <Text style={{
+                              fontSize: 12,
+                              color: darkMode ? '#9ca3af' : '#6b7280'
+                            }}>
+                              {task.dueDate}
+                            </Text>
+                          </View>
                         )}
-                      </div>
-                    </div>
+                      </View>
+                    </View>
                     
-                    <div className="flex items-center space-x-2 ml-3">
-                      <button
-                        onClick={() => startEditTask(task)}
-                        className={`p-1 sm:p-2 rounded-lg transition-colors ${
-                          darkMode ? 'text-blue-400 hover:bg-gray-700' : 'text-blue-500 hover:bg-blue-50'
-                        }`}
+                    <View style={{ flexDirection: 'row', gap: 8 }}>
+                      <TouchableOpacity
+                        onPress={() => startEditTask(task)}
+                        style={{
+                          padding: 8,
+                          borderRadius: 8,
+                          backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)'
+                        }}
                       >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => deleteTask(task.id)}
-                        className={`p-1 sm:p-2 rounded-lg transition-colors ${
-                          darkMode ? 'text-red-400 hover:bg-gray-700' : 'text-red-500 hover:bg-red-50'
-                        }`}
+                        <Edit3 color={darkMode ? '#60a5fa' : '#3b82f6'} size={16} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => deleteTask(task.id)}
+                        style={{
+                          padding: 8,
+                          borderRadius: 8,
+                          backgroundColor: darkMode ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)'
+                        }}
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                        <Trash2 color={darkMode ? '#f87171' : '#ef4444'} size={16} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </BlurView>
+        ))}
         
         {filteredTasks.length === 0 && (
-          <div className="text-center py-12 sm:py-16">
-            <Clock className="w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-600">No tasks found</h3>
-            <p className="text-gray-500">Add a new task to get started!</p>
-          </div>
+          <View style={{ alignItems: 'center', paddingVertical: 60 }}>
+            <Clock color="#9ca3af" size={64} style={{ marginBottom: 16 }} />
+            <Text style={{
+              fontSize: 20,
+              fontWeight: '600',
+              color: '#6b7280',
+              marginBottom: 8
+            }}>
+              No tasks found
+            </Text>
+            <Text style={{ color: '#9ca3af', textAlign: 'center' }}>
+              Add a new task to get started!
+            </Text>
+          </View>
         )}
-      </div>
+      </ScrollView>
 
-      <button
-        onClick={() => setShowAddModal(true)}
-        className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 w-12 sm:w-16 h-12 sm:h-16 bg-blue-500 rounded-full shadow-xl hover:scale-105 transition-transform flex items-center justify-center z-50"
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        onPress={() => setShowAddModal(true)}
+        activeOpacity={0.8}
+        style={{
+          position: 'absolute',
+          bottom: 100,
+          right: 20,
+          width: 64,
+          height: 64,
+          borderRadius: 32,
+          backgroundColor: '#3b82f6',
+          justifyContent: 'center',
+          alignItems: 'center',
+          shadowColor: '#3b82f6',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 8,
+          elevation: 8
+        }}
       >
-        <Plus className="w-6 sm:w-8 h-6 sm:h-8 text-white" />
-      </button>
-    </div>
+        <Plus color="white" size={32} />
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 };
 

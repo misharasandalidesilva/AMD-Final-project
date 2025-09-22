@@ -17,40 +17,39 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import { login } from "@/service/AuthService";
 
-export default function LoginScreenLight() {
+export default function LoginScreenToDo() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Custom Toast Configuration
   const toastConfig = {
     success: (props: any) => (
-        <BaseToast
-            {...props}
-            style={{
-              borderLeftColor: "#10B981",
-              backgroundColor: "#D1FAE5",
-              borderRadius: 10,
-              marginHorizontal: 10,
-            }}
-            contentContainerStyle={{ paddingHorizontal: 15 }}
-            text1Style={{ fontSize: 16, fontWeight: "bold", color: "#065F46" }}
-            text2Style={{ fontSize: 14, color: "#065F46" }}
-        />
+      <BaseToast
+        {...props}
+        style={{
+          borderLeftColor: "#34D399",
+          backgroundColor: "#ECFDF5",
+          borderRadius: 12,
+          marginHorizontal: 12,
+        }}
+        contentContainerStyle={{ paddingHorizontal: 15 }}
+        text1Style={{ fontSize: 16, fontWeight: "bold", color: "#065F46" }}
+        text2Style={{ fontSize: 14, color: "#047857" }}
+      />
     ),
     error: (props: any) => (
-        <ErrorToast
-            {...props}
-            style={{
-              borderLeftColor: "#EF4444",
-              backgroundColor: "#FEE2E2",
-              borderRadius: 10,
-              marginHorizontal: 10,
-            }}
-            contentContainerStyle={{ paddingHorizontal: 15 }}
-            text1Style={{ fontSize: 16, fontWeight: "bold", color: "#B91C1C" }}
-            text2Style={{ fontSize: 14, color: "#B91C1C" }}
-        />
+      <ErrorToast
+        {...props}
+        style={{
+          borderLeftColor: "#F87171",
+          backgroundColor: "#FEF2F2",
+          borderRadius: 12,
+          marginHorizontal: 12,
+        }}
+        contentContainerStyle={{ paddingHorizontal: 15 }}
+        text1Style={{ fontSize: 16, fontWeight: "bold", color: "#7F1D1D" }}
+        text2Style={{ fontSize: 14, color: "#B91C1C" }}
+      />
     ),
   };
 
@@ -70,7 +69,6 @@ export default function LoginScreenLight() {
     setIsLoading(true);
     try {
       await login(email, password);
-
       Toast.show({
         type: "success",
         text1: "Login Successful",
@@ -79,8 +77,6 @@ export default function LoginScreenLight() {
         visibilityTime: 3000,
         topOffset: 50,
       });
-
-      // router.push("/(dashboard)/homePage");
     } catch (error) {
       Toast.show({
         type: "error",
@@ -100,142 +96,103 @@ export default function LoginScreenLight() {
   };
 
   return (
-      <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1, backgroundColor: "#FFFFFF" }}
-      >
-        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <View className="flex-1 justify-center px-6 py-5 bg-white">
-            {/* Logo */}
-            <View className="flex items-center justify-center mb-6">
-              {/* <Image
-                  source={require("../../assets/images/diary.jpg")}
-                  style={{ width: 100, height: 100 }} // podi & visible size
-                  resizeMode="contain"
-              /> */}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1, backgroundColor: "#FFF5F7" }}
+    >
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF5F7" />
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
+          <LinearGradient
+            colors={["#FFE4E6", "#E0F2FE", "#F5F3FF"]}
+            style={{
+              borderRadius: 30,
+              padding: 24,
+              width: "90%",
+              maxWidth: 400,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 5,
+            }}
+          >
+            <Text style={{ fontSize: 28, fontWeight: "800", color: "#8B5CF6", textAlign: "center", marginBottom: 6 }}>
+              Welcome to To-Do App ✨
+            </Text>
+            <Text style={{ fontSize: 14, color: "#374151", textAlign: "center", marginBottom: 20 }}>
+              Organize your tasks and boost your productivity
+            </Text>
+
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ color: "#374151", fontSize: 14, marginBottom: 4 }}>Email</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#F3E8FF", borderWidth: 1, borderColor: "#D8B4FE", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+                <MaterialCommunityIcons name="email-outline" size={22} color="#8B5CF6" />
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="Enter your email"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  placeholderTextColor="#9CA3AF"
+                  style={{ flex: 1, color: "#374151" }}
+                />
+              </View>
             </View>
 
-            {/* Header */}
-            <View className="mb-10">
-              <Text className="text-3xl italic font-bold text-gray-900 text-center mb-2">
-                Welcome To Day Book
-              </Text>
-              <Text className="text-gray-500 text-center text-base">
-                Sign in to your account
-              </Text>
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ color: "#374151", fontSize: 14, marginBottom: 4 }}>Password</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#F3E8FF", borderWidth: 1, borderColor: "#D8B4FE", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+                <MaterialCommunityIcons name="lock-outline" size={22} color="#8B5CF6" />
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                  secureTextEntry
+                  autoCapitalize="none"
+                  placeholderTextColor="#9CA3AF"
+                  style={{ flex: 1, color: "#374151" }}
+                />
+              </View>
             </View>
 
-            {/* Login Form */}
-            <View className="space-y-6">
-              {/* Email Input */}
-              <View>
-                <Text className="text-gray-700 text-sm font-medium mb-2">
-                  Email Address
+            <TouchableOpacity onPress={handleLogin} disabled={isLoading} style={{ marginBottom: 16 }}>
+              <LinearGradient colors={["#C4B5FD", "#A78BFA"]} style={{ paddingVertical: 12, borderRadius: 12, alignItems: "center" }}>
+                <Text style={{ color: "#FFF", fontWeight: "600", fontSize: 16 }}>
+                  {isLoading ? "Signing In..." : "Sign In"}
                 </Text>
-                <View className="flex-row items-center px-3 py-3 bg-gray-100 border border-gray-300 rounded-lg shadow-sm">
-                  <MaterialCommunityIcons
-                      name="email-outline"
-                      size={24}
-                      color="#6B7280"
-                      style={{ marginRight: 8 }}
-                  />
-                  <TextInput
-                      value={email}
-                      onChangeText={setEmail}
-                      placeholder="Enter your email"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      className="flex-1 text-gray-900"
-                      placeholderTextColor="#9CA3AF"
-                  />
-                </View>
-              </View>
+              </LinearGradient>
+            </TouchableOpacity>
 
-              {/* Password Input */}
-              <View>
-                <Text className="text-gray-700 text-sm font-medium mb-2">
-                  Password
-                </Text>
-                <View className="flex-row items-center px-3 py-3 bg-gray-100 border border-gray-300 rounded-lg shadow-sm">
-                  <MaterialCommunityIcons
-                      name="lock-outline"
-                      size={24}
-                      color="#6B7280"
-                      style={{ marginRight: 8 }}
-                  />
-                  <TextInput
-                      value={password}
-                      onChangeText={setPassword}
-                      placeholder="Enter your password"
-                      secureTextEntry
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      className="flex-1 text-gray-900"
-                      placeholderTextColor="#9CA3AF"
-                  />
-                </View>
-              </View>
+            <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: "#E5E7EB" }} />
+              <Text style={{ marginHorizontal: 8, color: "#9CA3AF", fontSize: 12 }}>Or continue with</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: "#E5E7EB" }} />
+            </View>
 
-              {/* Forgot Password */}
-              <TouchableOpacity className="self-end">
-                <Text className="text-blue-500 text-sm font-medium">
-                  Forgot Password?
-                </Text>
+            {/* Social Buttons with original logos */}
+            <View style={{ gap: 12 }}>
+              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#E5E7EB", paddingVertical: 10, borderRadius: 12, backgroundColor: "#FFFFFF" }}>
+                <Image source={require('../../assets/images/image.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
+                <Text style={{ color: "#374151", fontWeight: "500" }}>Continue with Google</Text>
               </TouchableOpacity>
 
-              {/* Login Button */}
-              <TouchableOpacity onPress={handleLogin} disabled={isLoading}>
-                <LinearGradient
-                    colors={["#4F46E5", "#6366F1"]}
-                    className="w-full py-3 rounded-lg items-center shadow-md"
-                >
-                  <Text className="text-white text-base font-semibold">
-                    {isLoading ? "Signing In..." : "Sign In"}
-                  </Text>
-                </LinearGradient>
+              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#E5E7EB", paddingVertical: 10, borderRadius: 12, backgroundColor: "#FFFFFF" }}>
+                <Image source={require('../../assets/images/png-apple-logo-9711.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
+                <Text style={{ color: "#374151", fontWeight: "500" }}>Continue with Apple</Text>
               </TouchableOpacity>
-
-              {/* Divider */}
-              <View className="flex-row items-center my-6">
-                <View className="flex-1 h-px bg-gray-300" />
-                <Text className="px-4 text-gray-400 text-sm">Or continue with</Text>
-                <View className="flex-1 h-px bg-gray-300" />
-              </View>
-
-              {/* Social Login */}
-              <View className="flex-col space-y-4">
-                <TouchableOpacity className="w-full py-3 border border-gray-300 rounded-lg flex-row items-center justify-center shadow-sm bg-white">
-                  <Text className="text-gray-700 text-base font-medium ml-2">
-                    Continue with Google
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity className="w-full py-3 border border-gray-300 rounded-lg flex-row items-center justify-center shadow-sm bg-white">
-                  <Text className="text-gray-700 text-base font-medium ml-2">
-                    Continue with Apple
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Sign Up */}
-              <View className="flex-row justify-center mt-6">
-                <Text className="text-gray-500 text-base">
-                  Don&apos;t have an account?{" "}
-                </Text>
-                <Pressable onPress={() => router.push("/signup")}>
-                  <Text className="text-blue-500 text-base font-medium">
-                    Sign Up
-                  </Text>
-                </Pressable>
-              </View>
             </View>
-          </View>
-        </ScrollView>
 
-        {/* Toast Container with custom config */}
-        <Toast config={toastConfig} />
-      </KeyboardAvoidingView>
+            <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 16 }}>
+              <Text style={{ color: "#6B7280", fontSize: 14 }}>Don't have an account? </Text>
+              <Pressable onPress={() => router.push("/signup")}>
+                <Text style={{ color: "#8B5CF6", fontWeight: "600" }}>Sign Up</Text>
+              </Pressable>
+            </View>
+          </LinearGradient>
+        </View>
+      </ScrollView>
+      <Toast config={toastConfig} />
+    </KeyboardAvoidingView>
   );
 }
