@@ -52,7 +52,38 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-<<<<<<< HEAD
 =======
 >>>>>>> c70e40b (First commit)
 >>>>>>> 67ba11e (ui done)
+
+# Todo Dashboard App 📝
+
+![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![React](https://img.shields.io/badge/React-v18.2.0-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-v5.1.0-blue)
+
+A modern, responsive **Todo Dashboard Web App** built with **React** and **TypeScript**, featuring **task management**, **calendar view**, **notifications**, and **dark/light themes**.
+
+---
+
+## 🌟 Features
+
+- ✅ Add, edit, and delete tasks
+- 📊 Dashboard view with task statistics
+- 🗂 Filter tasks by **All / Active / Completed**
+- 🎯 Set **task priority**: High / Medium / Low
+- 📅 Calendar view to schedule tasks
+- 🔔 Real-time notifications for important tasks
+- 🌙 Dark and Light mode support
+- 📱 Fully responsive UI
+- 👤 User profile with task summary
+- ⚡ Smooth bottom navigation for quick access
+
+---
+
+## 🚀 Live Demo
+
+[Click here to see the demo]()  
+
+---
