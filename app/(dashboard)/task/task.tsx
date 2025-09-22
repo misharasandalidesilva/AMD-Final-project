@@ -38,7 +38,7 @@ const Tasks = ({
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string | number) => {
     const colors = {
       high: ['#fed7aa', '#fca5a5'],
       medium: ['#fde68a', '#f59e0b'],
@@ -47,7 +47,7 @@ const Tasks = ({
     return colors[priority] || ['#e5e7eb', '#6b7280'];
   };
 
-  const getCategoryColor = (category) => {
+  const getCategoryColor = (category: string | number) => {
     const colors = {
       Work: darkMode ? { bg: '#1e3a8a', text: '#bfdbfe' } : { bg: '#dbeafe', text: '#1d4ed8' },
       Personal: darkMode ? { bg: '#581c87', text: '#c4b5fd' } : { bg: '#e9d5ff', text: '#7c3aed' },
@@ -57,7 +57,7 @@ const Tasks = ({
   };
 
   const filteredTasks = useMemo(() => {
-    return tasks.filter(task => {
+    return tasks.filter((task: { completed: any; title: string; description: string; }) => {
       const matchesTab = activeTab === 'all' || 
                        (activeTab === 'active' && !task.completed) || 
                        (activeTab === 'completed' && task.completed);
@@ -195,7 +195,7 @@ const Tasks = ({
         contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
-        {filteredTasks.map(task => (
+        {filteredTasks.map((task: { id: React.Key | null | undefined; completed: any; title: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; description: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; priority: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; category: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; dueDate: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
           <BlurView
             key={task.id}
             intensity={task.completed ? 60 : 40}

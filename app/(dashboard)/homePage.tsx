@@ -36,7 +36,7 @@ const Dashboard = ({
   toggleTask 
 }) => {
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string | number) => {
     const colors = {
       high: ['#fed7aa', '#fca5a5'],
       medium: ['#fde68a', '#f59e0b'],
@@ -257,7 +257,7 @@ const Dashboard = ({
               </TouchableOpacity>
             </View>
 
-            {tasks.slice(0, 3).map(task => (
+            {tasks.slice(0, 3).map((task: { id: React.Key | null | undefined; completed: any; title: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; category: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; priority: any; }) => (
               <View key={task.id} style={{
                 flexDirection: 'row',
                 alignItems: 'center',
