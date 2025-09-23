@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import {
   View,
   Text,
@@ -11,16 +11,18 @@ import {
   StatusBar,
   Image,
 } from "react-native";
-import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
-import { login } from "@/service/AuthService";
+import { login } from "@/service/AuthService";  
+import { useRouter } from "expo-router";
+
 
 export default function LoginScreenToDo() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const toastConfig = {
     success: (props: any) => (
@@ -54,6 +56,9 @@ export default function LoginScreenToDo() {
   };
 
   const handleLogin = async () => {
+    console.log("Login button pressed");
+    console.log("Email:", email);
+    console.log("Password:", password);
     if (!email || !password) {
       Toast.show({
         type: "error",
@@ -69,6 +74,7 @@ export default function LoginScreenToDo() {
     setIsLoading(true);
     try {
       await login(email, password);
+       router.push("/(dashboard)/homePage")
       Toast.show({
         type: "success",
         text1: "Login Successful",
@@ -89,6 +95,7 @@ export default function LoginScreenToDo() {
       setIsLoading(false);
       return;
     }
+   
 
     setTimeout(() => {
       setIsLoading(false);
@@ -156,7 +163,7 @@ export default function LoginScreenToDo() {
               </View>
             </View>
 
-            <TouchableOpacity onPress={handleLogin} disabled={isLoading} style={{ marginBottom: 16 }}>
+            <TouchableOpacity onPress={handleLogin} style={{ marginBottom: 16 }}>
               <LinearGradient colors={["#C4B5FD", "#A78BFA"]} style={{ paddingVertical: 12, borderRadius: 12, alignItems: "center" }}>
                 <Text style={{ color: "#FFF", fontWeight: "600", fontSize: 16 }}>
                   {isLoading ? "Signing In..." : "Sign In"}
@@ -185,7 +192,7 @@ export default function LoginScreenToDo() {
 
             <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 16 }}>
               <Text style={{ color: "#6B7280", fontSize: 14 }}>Don't have an account? </Text>
-              <Pressable onPress={() => router.push("/signup")}>
+              <Pressable onPress={() => router.push("/(auth)/signup")}>
                 <Text style={{ color: "#8B5CF6", fontWeight: "600" }}>Sign Up</Text>
               </Pressable>
             </View>

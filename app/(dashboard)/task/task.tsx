@@ -1,388 +1,347 @@
-import React, { useMemo, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ScrollView, 
-  SafeAreaView,
-  StatusBar,
-  Dimensions 
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Modal,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
-import { 
-  Plus, 
-  Bell, 
-  Check, 
-  Search, 
-  Edit3, 
-  Trash2, 
-  Calendar, 
-  Clock 
-} from 'lucide-react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { addTask } from '@/service/TaskService';
+import { useRouter } from 'expo-router';
 
-const { width } = Dimensions.get('window');
+export default function TaskFormScreen() {
+  const router = useRouter();
+  const [task, setTask] = useState({
+    title: '',
+    description: '',
+    priority: 'medium',
+    category: 'personal',
+    date: new Date().toISOString().split('T')[0],
+  });
 
-const Tasks = ({ 
-  tasks, 
-  stats, 
-  unreadNotifications, 
-  darkMode, 
-  toggleTask, 
-  deleteTask, 
-  startEditTask, 
-  setShowAddModal, 
-  setShowNotificationModal 
-}) => {
-  const [activeTab, setActiveTab] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPriorityModal, setShowPriorityModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showDateModal, setShowDateModal] = useState(false);
 
-  const getPriorityColor = (priority: string | number) => {
-    const colors = {
-      high: ['#fed7aa', '#fca5a5'],
-      medium: ['#fde68a', '#f59e0b'],
-      low: ['#bbf7d0', '#10b981']
-    };
-    return colors[priority] || ['#e5e7eb', '#6b7280'];
+  // calendar month/year state
+  const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth());
+  const [calendarYear, setCalendarYear] = useState(new Date().getFullYear());
+
+  const priorities = [
+    { value: 'high', label: 'High', color: '#ef4444', icon: 'alert-circle' },
+    { value: 'medium', label: 'Medium', color: '#f59e0b', icon: 'remove-circle' },
+    { value: 'low', label: 'Low', color: '#10b981', icon: 'checkmark-circle' },
+  ];
+
+  const categories = [
+    { value: 'work', label: 'Work', icon: 'briefcase', color: '#3b82f6' },
+    { value: 'personal', label: 'Personal', icon: 'person', color: '#8b5cf6' },
+    { value: 'health', label: 'Health', icon: 'heart', color: '#ec4899' },
+  ];
+
+  function handleInputChange(key: string, value: string) {
+    setTask((prev) => ({ ...prev, [key]: value }));
+  }
+
+  const generateCalendarDates = (month: number, year: number) => {
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    const dates: (Date | null)[] = [];
+
+    for (let i = 0; i < startingDayOfWeek; i++) dates.push(null);
+    for (let day = 1; day <= daysInMonth; day++) dates.push(new Date(year, month, day));
+    return dates;
   };
 
-  const getCategoryColor = (category: string | number) => {
-    const colors = {
-      Work: darkMode ? { bg: '#1e3a8a', text: '#bfdbfe' } : { bg: '#dbeafe', text: '#1d4ed8' },
-      Personal: darkMode ? { bg: '#581c87', text: '#c4b5fd' } : { bg: '#e9d5ff', text: '#7c3aed' },
-      Health: darkMode ? { bg: '#14532d', text: '#bbf7d0' } : { bg: '#dcfce7', text: '#16a34a' }
-    };
-    return colors[category] || (darkMode ? { bg: '#374151', text: '#d1d5db' } : { bg: '#f3f4f6', text: '#374151' });
-  };
+  const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
-  const filteredTasks = useMemo(() => {
-    return tasks.filter((task: { completed: any; title: string; description: string; }) => {
-      const matchesTab = activeTab === 'all' || 
-                       (activeTab === 'active' && !task.completed) || 
-                       (activeTab === 'completed' && task.completed);
-      const matchesSearch = !searchQuery || 
-        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesTab && matchesSearch;
+  const formatDisplayDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
-  }, [tasks, activeTab, searchQuery]);
+  };
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: darkMode ? '#111827' : '#f9fafb' }}>
-      <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} />
-      
-      {/* Header Section */}
-      <LinearGradient
-        colors={['#bfdbfe', '#c4b5fd', '#c7d2fe']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{ paddingHorizontal: 20, paddingTop: 40, paddingBottom: 24 }}
-      >
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 32, fontWeight: 'bold', color: 'white', marginBottom: 8 }}>
-              My Tasks
-            </Text>
-            <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 18 }}>
-              {stats.active} tasks remaining
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => setShowNotificationModal(true)}
-            style={{
-              padding: 12,
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: 50,
-              position: 'relative'
-            }}
+  const isToday = (date: Date) => new Date().toDateString() === date.toDateString();
+  const isSelectedDate = (date: Date) => formatDate(date) === task.date;
+
+  const handleSubmit = async () => {
+    if (!task.title.trim()) {
+      Alert.alert('Validation Error', 'Task title is required.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await addTask({
+        title: task.title,
+        description: task.description,
+        priority: task.priority as 'high' | 'medium' | 'low',
+        category: task.category as 'work' | 'personal' | 'health',
+        date: task.date,
+        completed: false,
+      });
+      setLoading(false);
+      Alert.alert('Success', 'Task added successfully!');
+      router.push('/view/viewtasks');
+    } catch (error) {
+      setLoading(false);
+      console.error('Error adding task:', error);
+      Alert.alert('Error', 'There was an error adding the task. Please try again.');
+    }
+  };
+
+  const getPriorityDisplay = () => priorities.find((p) => p.value === task.priority) ?? priorities[1];
+  const getCategoryDisplay = () => categories.find((c) => c.value === task.category) ?? categories[1];
+
+  // Calendar Modal with fixed height
+  const renderDateModal = () => {
+    const calendarDates = generateCalendarDates(calendarMonth, calendarYear);
+    const monthNames = [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ];
+
+    return (
+      <Modal visible={showDateModal} transparent animationType="slide" onRequestClose={() => setShowDateModal(false)}>
+        <View className="flex-1 bg-black/50 justify-center items-center px-4">
+          <View
+            className="bg-white rounded-2xl p-6 w-full max-w-sm"
+            style={{ height: 450 }} // fixed height to avoid resizing
           >
-            <Bell color="white" size={28} />
-            {unreadNotifications > 0 && (
-              <BlurView intensity={80} tint="light" style={{
-                position: 'absolute',
-                top: -8,
-                right: -8,
-                backgroundColor: '#ef4444',
-                borderRadius: 12,
-                width: 24,
-                height: 24,
-                justifyContent: 'center',
-                alignItems: 'center',
-                overflow: 'hidden'
-              }}>
-                <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>
-                  {unreadNotifications}
-                </Text>
-              </BlurView>
-            )}
-          </TouchableOpacity>
-        </View>
-        
-        {/* Search Bar */}
-        <View style={{ position: 'relative' }}>
-          <Search 
-            color="rgba(255,255,255,0.7)" 
-            size={20} 
-            style={{ position: 'absolute', left: 16, top: 16, zIndex: 1 }}
-          />
-          <TextInput
-            placeholder="Search tasks..."
-            placeholderTextColor="rgba(255,255,255,0.7)"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={{
-              paddingLeft: 48,
-              paddingRight: 16,
-              paddingVertical: 16,
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: 'rgba(255,255,255,0.3)',
-              color: 'white',
-              fontSize: 16
-            }}
-          />
-        </View>
-      </LinearGradient>
+            {/* Header */}
+            <View className="flex-row items-center justify-between mb-4">
+              <TouchableOpacity
+                onPress={() => {
+                  if (calendarMonth === 0) {
+                    setCalendarMonth(11);
+                    setCalendarYear(calendarYear - 1);
+                  } else setCalendarMonth(calendarMonth - 1);
+                }}
+              >
+                <Ionicons name="chevron-back" size={24} color="#6b7280" />
+              </TouchableOpacity>
 
-      {/* Tab Navigation */}
-      <View style={{ 
-        backgroundColor: darkMode ? '#374151' : 'white',
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: darkMode ? '#4b5563' : '#e5e7eb'
-      }}>
-        <View style={{
-          backgroundColor: darkMode ? '#4b5563' : '#f3f4f6',
-          borderRadius: 16,
-          padding: 4,
-          flexDirection: 'row'
-        }}>
-          {['all', 'active', 'completed'].map(tab => (
+              <Text className="text-xl font-bold text-gray-800">
+                {monthNames[calendarMonth]} {calendarYear}
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => {
+                  if (calendarMonth === 11) {
+                    setCalendarMonth(0);
+                    setCalendarYear(calendarYear + 1);
+                  } else setCalendarMonth(calendarMonth + 1);
+                }}
+              >
+                <Ionicons name="chevron-forward" size={24} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Days */}
+            <View className="flex-row mb-2">
+              {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((day) => (
+                <View key={day} className="flex-1 items-center py-2">
+                  <Text className="text-xs font-semibold text-gray-500">{day}</Text>
+                </View>
+              ))}
+            </View>
+
+            {/* Calendar Grid */}
+            <View className="flex-row flex-wrap">
+              {calendarDates.map((date, index) => (
+                <View key={index} className="w-1/7 aspect-square p-1" style={{ width: '14.28%' }}>
+                  {date ? (
+                    <TouchableOpacity
+                      className={`flex-1 items-center justify-center rounded-lg ${
+                        isSelectedDate(date) ? 'bg-blue-500' : isToday(date) ? 'bg-blue-100 border border-blue-300' : 'bg-gray-50 active:bg-gray-100'
+                      }`}
+                      onPress={() => {
+                        handleInputChange('date', formatDate(date));
+                        setShowDateModal(false);
+                      }}
+                    >
+                      <Text className={`text-sm font-medium ${isSelectedDate(date) ? 'text-white' : isToday(date) ? 'text-blue-600' : 'text-gray-800'}`}>
+                        {date.getDate()}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : <View className="flex-1" />}
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  const renderPriorityModal = () => (
+    <Modal visible={showPriorityModal} transparent animationType="slide" onRequestClose={() => setShowPriorityModal(false)}>
+      <View className="flex-1 bg-black/50 justify-center items-center px-4">
+        <View className="bg-white rounded-2xl p-6 w-full max-w-sm">
+          <Text className="text-xl font-bold text-gray-800 text-center mb-6">Select Priority</Text>
+          {priorities.map((priority) => (
             <TouchableOpacity
-              key={tab}
-              onPress={() => setActiveTab(tab)}
-              style={{
-                flex: 1,
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                borderRadius: 12,
-                backgroundColor: activeTab === tab ? '#3b82f6' : 'transparent'
+              key={priority.value}
+              className="flex-row items-center p-4 rounded-xl mb-2 bg-gray-50 active:bg-gray-100"
+              onPress={() => {
+                handleInputChange('priority', priority.value);
+                setShowPriorityModal(false);
               }}
             >
-              <Text style={{
-                textAlign: 'center',
-                fontWeight: '600',
-                fontSize: 14,
-                color: activeTab === tab ? 'white' : (darkMode ? '#9ca3af' : '#6b7280')
-              }}>
-                {tab.charAt(0).toUpperCase() + tab.slice(1)} ({
-                  tab === 'all' ? stats.total : 
-                  tab === 'active' ? stats.active : 
-                  stats.completed
-                })
-              </Text>
+              <Ionicons name={priority.icon} size={20} color={priority.color} />
+              <Text className="ml-3 text-base font-medium text-gray-800">{priority.label}</Text>
             </TouchableOpacity>
           ))}
+          <TouchableOpacity className="mt-4 p-3 items-center" onPress={() => setShowPriorityModal(false)}>
+            <Text className="text-gray-500 text-base">Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const renderCategoryModal = () => (
+    <Modal visible={showCategoryModal} transparent animationType="slide" onRequestClose={() => setShowCategoryModal(false)}>
+      <View className="flex-1 bg-black/50 justify-center items-center px-4">
+        <View className="bg-white rounded-2xl p-6 w-full max-w-sm">
+          <Text className="text-xl font-bold text-gray-800 text-center mb-6">Select Category</Text>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category.value}
+              className="flex-row items-center p-4 rounded-xl mb-2 bg-gray-50 active:bg-gray-100"
+              onPress={() => {
+                handleInputChange('category', category.value);
+                setShowCategoryModal(false);
+              }}
+            >
+              <Ionicons name={category.icon} size={20} color={category.color} />
+              <Text className="ml-3 text-base font-medium text-gray-800">{category.label}</Text>
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity className="mt-4 p-3 items-center" onPress={() => setShowCategoryModal(false)}>
+            <Text className="text-gray-500 text-base">Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  return (
+    <ScrollView className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }} bounces={false}>
+      {/* Header */}
+      <View className="items-center py-6 px-4">
+        <Text className="text-3xl font-bold text-blue-600 mb-1 text-center">Add New Task</Text>
+        <Text className="text-base text-gray-900 text-center">Create and organize your tasks efficiently</Text>
+      </View>
+
+      {/* Form Container */}
+      <View className="bg-white mx-9 rounded-2xl p-4 shadow-xl min-h-[400px] mb-20">
+        {/* Title Input */}
+        <View className="mb-2">
+          <View className="flex-row items-center mb-2">
+            <Ionicons name="add-circle" size={16} color="#374151" />
+            <Text className="ml-2 text-sm font-semibold text-gray-900">Task Title</Text>
+          </View>
+          <TextInput
+            className="border-2 border-gray-200 rounded-xl p-4 text-base text-gray-800 bg-white"
+            value={task.title}
+            onChangeText={(text) => handleInputChange('title', text)}
+            placeholder="Enter task title..."
+            placeholderTextColor="#9ca3af"
+          />
+        </View>
+
+        {/* Description Input */}
+        <View className="mb-2">
+          <Text className="text-sm font-semibold text-gray-900 mb-2">Description</Text>
+          <TextInput
+            className="border-2 border-gray-200 rounded-xl p-4 text-base text-gray-800 bg-white h-24"
+            value={task.description}
+            onChangeText={(text) => handleInputChange('description', text)}
+            placeholder="Enter task description..."
+            placeholderTextColor="#9ca3af"
+            multiline
+            numberOfLines={4}
+            textAlignVertical="top"
+          />
+        </View>
+
+        {/* Due Date Selector */}
+        <View className="mb-2">
+          <View className="flex-row items-center mb-2">
+            <Ionicons name="calendar" size={16} color="#374151" />
+            <Text className="ml-2 text-sm font-semibold text-gray-900">Due Date</Text>
+          </View>
+          <TouchableOpacity
+            className="border-2 border-gray-200 rounded-xl p-4 flex-row justify-between items-center bg-white"
+            onPress={() => setShowDateModal(true)}
+          >
+            <Text className="text-base text-gray-800 font-medium">{formatDisplayDate(task.date)}</Text>
+            <Ionicons name="chevron-down" size={20} color="#6b7280" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Priority Selector */}
+        <View className="mb-2">
+          <View className="flex-row items-center mb-2">
+            <Ionicons name="flag" size={16} color="#374151" />
+            <Text className="ml-2 text-sm font-semibold text-gray-900">Priority</Text>
+          </View>
+          <TouchableOpacity
+            className="border-2 border-gray-200 rounded-xl p-4 flex-row justify-between items-center bg-white"
+            onPress={() => setShowPriorityModal(true)}
+          >
+            <View className="flex-row items-center">
+              <Ionicons name={getPriorityDisplay().icon} size={20} color={getPriorityDisplay().color} />
+              <Text className="ml-3 text-base text-gray-800 font-medium">{getPriorityDisplay().label}</Text>
+            </View>
+            <Ionicons name="chevron-down" size={20} color="#6b7280" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Category Selector */}
+        <View className="mb-2">
+          <Text className="text-sm font-semibold text-gray-900 mb-2">Category</Text>
+          <TouchableOpacity
+            className="border-2 border-gray-200 rounded-xl p-4 flex-row justify-between items-center bg-white"
+            onPress={() => setShowCategoryModal(true)}
+          >
+            <View className="flex-row items-center">
+              <Ionicons name={getCategoryDisplay().icon} size={20} color={getCategoryDisplay().color} />
+              <Text className="ml-3 text-base text-gray-800 font-medium">{getCategoryDisplay().label}</Text>
+            </View>
+            <Ionicons name="chevron-down" size={20} color="#6b7280" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Submit Button */}
+        <View className="mt-auto pt-4">
+          <TouchableOpacity
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-1 flex-row justify-center items-center shadow-lg active:scale-95 min-h-10"
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            <Ionicons name="add" size={22} color="white" />
+            <Text className="ml-1 text-white text-base font-bold">
+              {loading ? 'Adding Task...' : 'Add Task'}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
-      {/* Tasks List */}
-      <ScrollView 
-        style={{ flex: 1 }} 
-        contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {filteredTasks.map((task: { id: React.Key | null | undefined; completed: any; title: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; description: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; priority: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; category: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; dueDate: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
-          <BlurView
-            key={task.id}
-            intensity={task.completed ? 60 : 40}
-            tint={darkMode ? "dark" : "light"}
-            style={{
-              borderRadius: 16,
-              marginBottom: 16,
-              overflow: 'hidden',
-              borderWidth: 2,
-              borderColor: task.completed 
-                ? (darkMode ? '#16a34a' : '#bbf7d0') 
-                : (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)')
-            }}
-          >
-            <View style={{
-              backgroundColor: task.completed 
-                ? (darkMode ? 'rgba(22, 163, 74, 0.2)' : 'rgba(187, 247, 208, 0.3)')
-                : (darkMode ? 'rgba(55, 65, 81, 0.8)' : 'rgba(255, 255, 255, 0.8)'),
-              padding: 20
-            }}>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-                <TouchableOpacity
-                  onPress={() => toggleTask(task.id)}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 14,
-                    borderWidth: 2,
-                    borderColor: task.completed ? '#16a34a' : '#d1d5db',
-                    backgroundColor: task.completed ? '#16a34a' : 'transparent',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: 16,
-                    marginTop: 2
-                  }}
-                >
-                  {task.completed && <Check color="white" size={16} />}
-                </TouchableOpacity>
-
-                <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <View style={{ flex: 1, marginRight: 12 }}>
-                      <Text style={{
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        color: task.completed 
-                          ? '#6b7280' 
-                          : (darkMode ? 'white' : '#1f2937'),
-                        textDecorationLine: task.completed ? 'line-through' : 'none',
-                        marginBottom: 4
-                      }}>
-                        {task.title}
-                      </Text>
-                      <Text style={{
-                        fontSize: 14,
-                        color: task.completed 
-                          ? '#9ca3af' 
-                          : (darkMode ? '#d1d5db' : '#6b7280'),
-                        textDecorationLine: task.completed ? 'line-through' : 'none',
-                        marginBottom: 12,
-                        lineHeight: 20
-                      }}>
-                        {task.description}
-                      </Text>
-                      
-                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 12 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <LinearGradient
-                            colors={getPriorityColor(task.priority)}
-                            style={{
-                              width: 12,
-                              height: 12,
-                              borderRadius: 6,
-                              marginRight: 8
-                            }}
-                          />
-                          <Text style={{
-                            fontSize: 12,
-                            fontWeight: '500',
-                            color: darkMode ? '#9ca3af' : '#6b7280',
-                            textTransform: 'capitalize'
-                          }}>
-                            {task.priority}
-                          </Text>
-                        </View>
-                        
-                        <View style={{
-                          backgroundColor: getCategoryColor(task.category).bg,
-                          paddingHorizontal: 12,
-                          paddingVertical: 4,
-                          borderRadius: 12
-                        }}>
-                          <Text style={{
-                            fontSize: 12,
-                            fontWeight: '600',
-                            color: getCategoryColor(task.category).text
-                          }}>
-                            {task.category}
-                          </Text>
-                        </View>
-                        
-                        {task.dueDate && (
-                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Calendar color={darkMode ? '#9ca3af' : '#6b7280'} size={12} style={{ marginRight: 4 }} />
-                            <Text style={{
-                              fontSize: 12,
-                              color: darkMode ? '#9ca3af' : '#6b7280'
-                            }}>
-                              {task.dueDate}
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                    
-                    <View style={{ flexDirection: 'row', gap: 8 }}>
-                      <TouchableOpacity
-                        onPress={() => startEditTask(task)}
-                        style={{
-                          padding: 8,
-                          borderRadius: 8,
-                          backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)'
-                        }}
-                      >
-                        <Edit3 color={darkMode ? '#60a5fa' : '#3b82f6'} size={16} />
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => deleteTask(task.id)}
-                        style={{
-                          padding: 8,
-                          borderRadius: 8,
-                          backgroundColor: darkMode ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)'
-                        }}
-                      >
-                        <Trash2 color={darkMode ? '#f87171' : '#ef4444'} size={16} />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </BlurView>
-        ))}
-        
-        {filteredTasks.length === 0 && (
-          <View style={{ alignItems: 'center', paddingVertical: 60 }}>
-            <Clock color="#9ca3af" size={64} style={{ marginBottom: 16 }} />
-            <Text style={{
-              fontSize: 20,
-              fontWeight: '600',
-              color: '#6b7280',
-              marginBottom: 8
-            }}>
-              No tasks found
-            </Text>
-            <Text style={{ color: '#9ca3af', textAlign: 'center' }}>
-              Add a new task to get started!
-            </Text>
-          </View>
-        )}
-      </ScrollView>
-
-      {/* Floating Action Button */}
-      <TouchableOpacity
-        onPress={() => setShowAddModal(true)}
-        activeOpacity={0.8}
-        style={{
-          position: 'absolute',
-          bottom: 100,
-          right: 20,
-          width: 64,
-          height: 64,
-          borderRadius: 32,
-          backgroundColor: '#3b82f6',
-          justifyContent: 'center',
-          alignItems: 'center',
-          shadowColor: '#3b82f6',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8
-        }}
-      >
-        <Plus color="white" size={32} />
-      </TouchableOpacity>
-    </SafeAreaView>
+      {renderDateModal()}
+      {renderPriorityModal()}
+      {renderCategoryModal()}
+    </ScrollView>
   );
-};
-
-export default Tasks;
+}
