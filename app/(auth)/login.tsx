@@ -107,7 +107,7 @@ export default function LoginScreenToDo() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1, backgroundColor: "#FFF5F7" }}
     >
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF5F7" />
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF5F7"/>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
           <LinearGradient
@@ -125,7 +125,7 @@ export default function LoginScreenToDo() {
             }}
           >
             <Text style={{ fontSize: 23, fontWeight: "800", color: "#8B5CF6", textAlign: "center", marginBottom: 6 }}>
-              Welcome to TaskMaster ✨
+              Welcome to TaskMaster 📝
             </Text>
             <Text style={{ fontSize: 15, color: "#374151", textAlign: "center", marginBottom: 20 }}>
               Organize your tasks and boost your productivity

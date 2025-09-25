@@ -240,8 +240,8 @@ export default function CalendarTaskScreen() {
       presentationStyle="pageSheet"
       onRequestClose={() => setShowTaskForm(false)}
     >
-      <ScrollView className="flex-1 bg-slate-50">
-        <View className="flex-row justify-between items-center p-5 bg-white border-b border-gray-200">
+      <ScrollView className="flex-1 bg-purple-100">
+        <View className="flex-row justify-between items-center p-5 border-b border-gray-800 mb-20">
           <TouchableOpacity onPress={() => setShowTaskForm(false)}>
             <Ionicons name="close" size={24} color="#6b7280" />
           </TouchableOpacity>
@@ -263,7 +263,7 @@ export default function CalendarTaskScreen() {
               <Text className="ml-2 text-sm font-semibold text-gray-800">Task Title</Text>
             </View>
             <TextInput
-              className="border-2 border-gray-200 rounded-xl p-4 text-base text-gray-800 bg-white"
+              className="border-2 border-gray-400 rounded-xl p-4 text-base text-gray-800 bg-white"
               value={task.title}
               onChangeText={(text) => handleInputChange('title', text)}
               placeholder="Enter task title..."
@@ -274,7 +274,7 @@ export default function CalendarTaskScreen() {
           <View className="mb-4">
             <Text className="text-sm font-semibold text-gray-800 mb-2">Description</Text>
             <TextInput
-              className="border-2 border-gray-200 rounded-xl p-4 text-base text-gray-800 bg-white h-24"
+              className="border-2 border-gray-400 rounded-xl p-4 text-base text-gray-800 bg-white h-24"
               value={task.description}
               onChangeText={(text) => handleInputChange('description', text)}
               placeholder="Enter task description..."
@@ -291,7 +291,7 @@ export default function CalendarTaskScreen() {
               <Text className="ml-2 text-sm font-semibold text-gray-800">Priority</Text>
             </View>
             <TouchableOpacity
-              className="border-2 border-gray-200 rounded-xl p-4 flex-row justify-between items-center bg-white"
+              className="border-2 border-gray-400 rounded-xl p-4 flex-row justify-between items-center bg-white"
               onPress={() => setShowPriorityModal(true)}
             >
               <View className="flex-row items-center">
@@ -307,7 +307,7 @@ export default function CalendarTaskScreen() {
           <View className="mb-6">
             <Text className="text-sm font-semibold text-gray-800 mb-2">Category</Text>
             <TouchableOpacity
-              className="border-2 border-gray-200 rounded-xl p-4 flex-row justify-between items-center bg-white"
+              className="border-2 border-gray-400 rounded-xl p-4 flex-row justify-between items-center bg-white"
               onPress={() => setShowCategoryModal(true)}
             >
               <View className="flex-row items-center">
@@ -321,7 +321,7 @@ export default function CalendarTaskScreen() {
           </View>
 
           <TouchableOpacity
-            className={`${loading ? 'bg-gray-400' : 'bg-blue-500'} rounded-xl p-4 flex-row justify-center items-center shadow-md active:scale-95`}
+            className={`${loading ? 'bg-gray-400' : 'bg-blue-500'} rounded-xl p-3 flex-row justify-center items-center shadow-md active:scale-95`}
             onPress={handleSubmit}
             disabled={loading}
           >
@@ -410,13 +410,13 @@ export default function CalendarTaskScreen() {
   );
 
   return (
-    <ScrollView className="flex-1 bg-slate-50">
-      <View className="items-center py-6 px-4">
-        <Text className="text-3xl font-bold text-blue-500 mb-1 text-center">
-          Task Calendar
+    <ScrollView className="flex-1 bg-purple-100">
+      <View className="items-center py-20 px-4 ">
+        <Text className="text-3xl font-bold text-blue-500 mb-27 text-center">
+           Add Date Calender🗒️
         </Text>
-        <Text className="text-base text-gray-800 text-center">
-          Select a date to add a new task
+        <Text className="text-base text-gray-800 text-center mb-15 py-4">
+          Pick the perfect day to make this task happen and keep your schedule on track.
         </Text>
       </View>
 

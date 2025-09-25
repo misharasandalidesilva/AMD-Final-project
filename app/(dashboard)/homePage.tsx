@@ -40,7 +40,7 @@ const HomePage = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: darkMode ? '#111827' : '#f9fafb', paddingTop: 27}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: darkMode ? '#111827' : '#f9fafb', paddingTop: 26}}>
       <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         

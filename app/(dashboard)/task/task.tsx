@@ -239,13 +239,13 @@ export default function TaskFormScreen() {
   return (
     <ScrollView className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }} bounces={false}>
       {/* Header */}
-      <View className="items-center py-20 px-6">
+      <View className="items-center py-16 px-8">
         <Text className="text-3xl font-bold text-blue-600 mb-15 text-center">Add New Task</Text>
         <Text className="text-lg text-gray-900 text-center">Create and organize your tasks efficiently</Text>
       </View>
 
       {/* Form Container */}
-      <View className="bg-white mx-9 rounded-2xl p-4 shadow-xl min-h-[100px] mb-6`">
+      <View className="bg-white mx-9 rounded-2xl p-4 shadow-xl min-h-[100px] mt-">
         {/* Title Input */}
         <View className="mb-2">
           <View className="flex-row items-center mb-2">
@@ -253,7 +253,7 @@ export default function TaskFormScreen() {
             <Text className="ml-2 text-sm font-semibold text-gray-900">Task Title</Text>
           </View>
           <TextInput
-            className="border-2 border-gray-200 rounded-xl p-4 text-base text-gray-800 bg-white"
+            className="border-2 border-gray-400 rounded-xl p-4 text-base text-gray-800 bg-white"
             value={task.title}
             onChangeText={(text) => handleInputChange('title', text)}
             placeholder="Enter task title..."
@@ -265,7 +265,7 @@ export default function TaskFormScreen() {
         <View className="mb-2">
           <Text className="text-sm font-semibold text-gray-900 mb-2">Description</Text>
           <TextInput
-            className="border-2 border-gray-200 rounded-xl p-4 text-base text-gray-800 bg-white h-24"
+            className="border-2 border-gray-400 rounded-xl p-4 text-base text-gray-800 bg-white h-24"
             value={task.description}
             onChangeText={(text) => handleInputChange('description', text)}
             placeholder="Enter task description..."
@@ -283,7 +283,7 @@ export default function TaskFormScreen() {
             <Text className="ml-2 text-sm font-semibold text-gray-900">Due Date</Text>
           </View>
           <TouchableOpacity
-            className="border-2 border-gray-200 rounded-xl p-4 flex-row justify-between items-center bg-white"
+            className="border-2 border-gray-400 rounded-xl p-4 flex-row justify-between items-center bg-white"
             onPress={() => setShowDateModal(true)}
           >
             <Text className="text-base text-gray-800 font-medium">{formatDisplayDate(task.date)}</Text>
@@ -298,7 +298,7 @@ export default function TaskFormScreen() {
             <Text className="ml-2 text-sm font-semibold text-gray-900">Priority</Text>
           </View>
           <TouchableOpacity
-            className="border-2 border-gray-200 rounded-xl p-4 flex-row justify-between items-center bg-white"
+            className="border-2 border-gray-400 rounded-xl p-4 flex-row justify-between items-center bg-white"
             onPress={() => setShowPriorityModal(true)}
           >
             <View className="flex-row items-center">
@@ -313,7 +313,7 @@ export default function TaskFormScreen() {
         <View className="mb-2">
           <Text className="text-sm font-semibold text-gray-900 mb-2">Category</Text>
           <TouchableOpacity
-            className="border-2 border-gray-200 rounded-xl p-4 flex-row justify-between items-center bg-white"
+            className="border-2 border-gray-400 rounded-xl p-4 flex-row justify-between items-center bg-white"
             onPress={() => setShowCategoryModal(true)}
           >
             <View className="flex-row items-center">

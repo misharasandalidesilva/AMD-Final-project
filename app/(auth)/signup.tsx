@@ -93,8 +93,8 @@ export default function SignupScreenToDo() {
           <Text style={{ fontSize: 28, fontWeight: '800', color: '#8B5CF6', textAlign: 'center', marginBottom: 6 }}>
             Create Account
           </Text>
-          <Text style={{ fontSize: 14, color: '#374151', textAlign: 'center', marginBottom: 20 }}>
-            Sign up to get started
+          <Text style={{ fontSize: 15, color: '#374151', textAlign: 'center', marginBottom: 20 }}>
+            Sign up to get started 📝
           </Text>
 
           {/* Form Fields */}
@@ -102,7 +102,7 @@ export default function SignupScreenToDo() {
             {/* Full Name */}
             <View>
               <Text style={{ color: '#374151', fontSize: 14, marginBottom: 4 }}>Full Name</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', borderWidth: 1, borderColor: '#D8B4FE', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', borderWidth: 1, borderColor: '#D8B4FE', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4 }}>
                 <MaterialCommunityIcons name="account-outline" size={22} color="#8B5CF6" style={{ marginRight: 8 }} />
                 <TextInput
                   value={fullName}
@@ -117,7 +117,7 @@ export default function SignupScreenToDo() {
             {/* Email */}
             <View>
               <Text style={{ color: '#374151', fontSize: 14, marginBottom: 4 }}>Email</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', borderWidth: 1, borderColor: '#D8B4FE', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', borderWidth: 1, borderColor: '#D8B4FE', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4 }}>
                 <MaterialCommunityIcons name="email-outline" size={22} color="#8B5CF6" style={{ marginRight: 8 }} />
                 <TextInput
                   value={email}
@@ -134,7 +134,7 @@ export default function SignupScreenToDo() {
             {/* Password */}
             <View>
               <Text style={{ color: '#374151', fontSize: 14, marginBottom: 4 }}>Password</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', borderWidth: 1, borderColor: '#D8B4FE', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', borderWidth: 1, borderColor: '#D8B4FE', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4 }}>
                 <MaterialCommunityIcons name="lock-outline" size={22} color="#8B5CF6" style={{ marginRight: 8 }} />
                 <TextInput
                   value={password}
@@ -151,7 +151,7 @@ export default function SignupScreenToDo() {
             {/* Confirm Password */}
             <View>
               <Text style={{ color: '#374151', fontSize: 14, marginBottom: 4 }}>Confirm Password</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', borderWidth: 1, borderColor: '#D8B4FE', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', borderWidth: 1, borderColor: '#D8B4FE', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4 }}>
                 <MaterialCommunityIcons name="lock-check-outline" size={22} color="#8B5CF6" style={{ marginRight: 8 }} />
                 <TextInput
                   value={confirmPassword}
@@ -167,7 +167,7 @@ export default function SignupScreenToDo() {
 
             {/* Signup Button */}
             <TouchableOpacity onPress={handleSignup} disabled={isLoading}>
-              <LinearGradient colors={['#C4B5FD', '#A78BFA']} style={{ paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginTop: 8 }}>
+              <LinearGradient colors={['#C4B5FD', '#A78BFA']} style={{ paddingVertical: 8, borderRadius: 12, alignItems: 'center', marginTop: 8 }}>
                 <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 16 }}>
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </Text>
