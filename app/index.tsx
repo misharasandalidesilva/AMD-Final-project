@@ -8,6 +8,7 @@ import {
 import { CheckCircle2, TrendingUp, Calendar, UserPlus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Image } from 'expo-image';
 
 const WelcomePage = () => {
   const router = useRouter();
@@ -33,22 +34,23 @@ const WelcomePage = () => {
 
         {/* Content */}
         <View className="flex-1 justify-center items-center px-6 z-10">
-          <View className="items-center mb-12">
-            <View className="w-24 h-24 bg-white/20 rounded-3xl justify-center items-center mb-6">
+          <View className="items-center mb-8">
+              <Image source={require('../assets/images/list.png')} style={{ width: 70, height: 70, marginRight: 7, }} />
+            {/* <View className="w-24 h-24 bg-white/20 rounded-3xl justify-center items-center mb-6">
               <CheckCircle2 size={56} color="white" />
-            </View>
+            </View> */}
             
-            <Text className="text-5xl sm:text-6xl font-bold text-white mb-6 text-center">
+            <Text className="text-4xl sm:text-6xl font-bold text-white mb-6 text-center mt-3">
               TaskMaster
             </Text>
             
-            <Text className="text-xl text-white/90 text-center leading-relaxed mb-10 max-w-sm">
+            <Text className="text-xl text-white/100 text-center leading-relaxed mb-3 max-w-sm">
               Organize your life, boost productivity, and achieve your goals with our task management system.
             </Text>
           </View>
 
           {/* Features */}
-          <View className="flex-row flex-wrap justify-center gap-6 mb-12 max-w-2xl">
+          <View className="flex-row flex-wrap justify-center gap-6 mb-6 max-w-xl">
             <View className="bg-white/10 rounded-2xl p-6 items-center min-w-[160px] flex-1 max-w-[200px]">
               <TrendingUp size={32} color="white" className="mb-4" />
               <Text className="text-lg font-semibold text-white mb-2 text-center">

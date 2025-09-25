@@ -40,7 +40,7 @@ const HomePage = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: darkMode ? '#111827' : '#f9fafb' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: darkMode ? '#111827' : '#f9fafb', paddingTop: 27}}>
       <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         
@@ -51,7 +51,7 @@ const HomePage = () => {
           end={{ x: 1, y: 1 }}
           style={{ paddingHorizontal: 20, paddingVertical: 15 }}
         >
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 28, fontWeight: 'bold', color: 'white', marginBottom: 4 }}>
                 Welcome back, {user.name}! 👋
@@ -60,7 +60,7 @@ const HomePage = () => {
                 Here's what's happening with your tasks today
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', gap: 12 }}>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
               <TouchableOpacity
                 onPress={handleNotificationModal}
                 style={{
@@ -112,7 +112,7 @@ const HomePage = () => {
               padding: 16,
               overflow: 'hidden'
             }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
                 <CheckCircle2 color="white" size={24} />
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white' }}>
                  
@@ -174,12 +174,12 @@ const HomePage = () => {
         </LinearGradient>
 
         {/* Content Section */}
-        <View style={{ padding: 20, paddingBottom: 100 }}>
+        <View style={{ padding: 20, paddingBottom: 43, marginBottom: 10 }}>
           {/* Quick Actions */}
           <Text style={{ 
-            fontSize: 20, 
+            fontSize: 22, 
             fontWeight: 'bold', 
-            marginBottom: 16,
+            marginBottom: 28,
             color: darkMode ? 'white' : '#1f2937'
           }}>
             Quick Actions

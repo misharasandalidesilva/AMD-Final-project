@@ -124,16 +124,16 @@ export default function LoginScreenToDo() {
               elevation: 5,
             }}
           >
-            <Text style={{ fontSize: 28, fontWeight: "800", color: "#8B5CF6", textAlign: "center", marginBottom: 6 }}>
-              Welcome to To-Do App ✨
+            <Text style={{ fontSize: 23, fontWeight: "800", color: "#8B5CF6", textAlign: "center", marginBottom: 6 }}>
+              Welcome to TaskMaster ✨
             </Text>
-            <Text style={{ fontSize: 14, color: "#374151", textAlign: "center", marginBottom: 20 }}>
+            <Text style={{ fontSize: 15, color: "#374151", textAlign: "center", marginBottom: 20 }}>
               Organize your tasks and boost your productivity
             </Text>
 
             <View style={{ marginBottom: 16 }}>
               <Text style={{ color: "#374151", fontSize: 14, marginBottom: 4 }}>Email</Text>
-              <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#F3E8FF", borderWidth: 1, borderColor: "#D8B4FE", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#F3E8FF", borderWidth: 1, borderColor: "#D8B4FE", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 5 }}>
                 <MaterialCommunityIcons name="email-outline" size={22} color="#8B5CF6" />
                 <TextInput
                   value={email}
@@ -149,7 +149,7 @@ export default function LoginScreenToDo() {
 
             <View style={{ marginBottom: 12 }}>
               <Text style={{ color: "#374151", fontSize: 14, marginBottom: 4 }}>Password</Text>
-              <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#F3E8FF", borderWidth: 1, borderColor: "#D8B4FE", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#F3E8FF", borderWidth: 1, borderColor: "#D8B4FE", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 5 }}>
                 <MaterialCommunityIcons name="lock-outline" size={22} color="#8B5CF6" />
                 <TextInput
                   value={password}
@@ -164,14 +164,14 @@ export default function LoginScreenToDo() {
             </View>
 
             <TouchableOpacity onPress={handleLogin} style={{ marginBottom: 16 }}>
-              <LinearGradient colors={["#C4B5FD", "#A78BFA"]} style={{ paddingVertical: 12, borderRadius: 12, alignItems: "center" }}>
+              <LinearGradient colors={["#C4B5FD", "#A78BFA"]} style={{ paddingVertical: 8, borderRadius: 12, alignItems: "center" }}>
                 <Text style={{ color: "#FFF", fontWeight: "600", fontSize: 16 }}>
                   {isLoading ? "Signing In..." : "Sign In"}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
 
-            <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 10 }}>
               <View style={{ flex: 1, height: 1, backgroundColor: "#E5E7EB" }} />
               <Text style={{ marginHorizontal: 8, color: "#9CA3AF", fontSize: 12 }}>Or continue with</Text>
               <View style={{ flex: 1, height: 1, backgroundColor: "#E5E7EB" }} />
@@ -179,12 +179,12 @@ export default function LoginScreenToDo() {
 
             {/* Social Buttons with original logos */}
             <View style={{ gap: 12 }}>
-              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#E5E7EB", paddingVertical: 10, borderRadius: 12, backgroundColor: "#FFFFFF" }}>
+              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#E5E7EB", paddingVertical: 8, borderRadius: 12, backgroundColor: "#FFFFFF" }}>
                 <Image source={require('../../assets/images/image.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
                 <Text style={{ color: "#374151", fontWeight: "500" }}>Continue with Google</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#E5E7EB", paddingVertical: 10, borderRadius: 12, backgroundColor: "#FFFFFF" }}>
+              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#E5E7EB", paddingVertical: 8, borderRadius: 12, backgroundColor: "#FFFFFF" }}>
                 <Image source={require('../../assets/images/png-apple-logo-9711.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
                 <Text style={{ color: "#374151", fontWeight: "500" }}>Continue with Apple</Text>
               </TouchableOpacity>

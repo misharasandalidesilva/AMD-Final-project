@@ -239,13 +239,13 @@ export default function TaskFormScreen() {
   return (
     <ScrollView className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }} bounces={false}>
       {/* Header */}
-      <View className="items-center py-6 px-4">
-        <Text className="text-3xl font-bold text-blue-600 mb-1 text-center">Add New Task</Text>
-        <Text className="text-base text-gray-900 text-center">Create and organize your tasks efficiently</Text>
+      <View className="items-center py-20 px-6">
+        <Text className="text-3xl font-bold text-blue-600 mb-15 text-center">Add New Task</Text>
+        <Text className="text-lg text-gray-900 text-center">Create and organize your tasks efficiently</Text>
       </View>
 
       {/* Form Container */}
-      <View className="bg-white mx-9 rounded-2xl p-4 shadow-xl min-h-[400px] mb-20">
+      <View className="bg-white mx-9 rounded-2xl p-4 shadow-xl min-h-[100px] mb-6`">
         {/* Title Input */}
         <View className="mb-2">
           <View className="flex-row items-center mb-2">
@@ -327,7 +327,7 @@ export default function TaskFormScreen() {
         {/* Submit Button */}
         <View className="mt-auto pt-4">
           <TouchableOpacity
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-1 flex-row justify-center items-center shadow-lg active:scale-95 min-h-10"
+             className="bg-blue-400 flex-row items-center justify-center px-10 py-3 rounded-2xl shadow-xl active:scale-95 "
             onPress={handleSubmit}
             disabled={loading}
           >
