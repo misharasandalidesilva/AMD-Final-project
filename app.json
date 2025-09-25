@@ -12,8 +12,9 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.misharasandali.ToDoNotificationsApp",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/to-do-list.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
@@ -37,6 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d7810e2d-8c77-48c9-a1c2-abfbaa653091"
+      }
     }
   }
 }
